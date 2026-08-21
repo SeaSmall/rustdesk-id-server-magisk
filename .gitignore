@@ -1,0 +1,6 @@
+# Release 构建产物（放在 GitHub Release，不进仓库）
+*.zip
+# 临时/系统文件
+*.tmp
+.DS_Store
+Thumbs.db
