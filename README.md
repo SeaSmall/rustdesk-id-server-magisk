@@ -63,6 +63,29 @@ rustdesk-id-server/
 
 ---
 
+## 默认 key 与修改 key
+
+本模块发布包（zip）里 `config/env.sh` 的**默认 key** 为：
+
+```
+SERVER_KEY="W8n7Wz7XhPX8wEPUxpnop5T7HGyPGVSF"
+```
+
+> 通过 `install.sh` / `install.ps1` 一键安装时，脚本会自动生成随机 key 覆盖默认值；
+> 但如果**直接拷贝 zip 到自己手机用 Magisk 手动安装**（见“方式三”），则使用 zip 内置的这个默认 key。
+
+**怎么改成你自己的 key（客户端必须填同一个值）：**
+
+- **方法 A（推荐，改后重新打包再装）**：在电脑上编辑 `config/env.sh`，把 `SERVER_KEY` 改成你要的固定值，例如 `SERVER_KEY="MySecretKey123"`，然后重新打包成 zip 安装。
+- **方法 B（装好后直接改手机文件）**：用 root 文件管理器（或 adb）编辑
+  `/data/adb/modules/rustdesk_id_server/config/env.sh`，修改 `SERVER_KEY`，然后重启手机或重跑 `service.sh` 生效。
+- **方法 C（一键安装时指定）**：`./install.ps1 -Key MySecretKey123` 或 `./install.sh --key MySecretKey123`。
+
+> ⚠️ key 一旦改过，**所有客户端**也必须改成相同的值，否则无法连接。
+> 若已部署过旧 key，客户端需同步更新。建议用一个**强随机长字符串**作为 key。
+
+---
+
 ## 安装方式
 
 ### 方式一：一键脚本安装（推荐）
@@ -102,6 +125,28 @@ chmod +x install.sh
 3. 打开 **Magisk Manager** → **模块** → **从本地安装** → 选择该 zip
 4. 重启后 hbbs 自启；或手动执行 `service.sh`
 
+### 方式三：用户自己在手机 Magisk 直接安装（无需电脑）
+
+**完全可以。** 任何人拿到本模块的 zip（发布包/Release 里的 `rustdesk-id-server.zip`），
+都能**在手机上用 Magisk 直接安装**，不需要电脑、不需要 adb。
+
+操作步骤：
+
+1. 从 Release（或仓库）下载 **`rustdesk-id-server.zip`**（模块已内置 arm64 hbbs/hbbr，开箱即用）
+2. 把这个 zip 放进手机（下载 / 微信 / 数据线传输均可）
+3. 打开 **Magisk Manager** → **底部“模块”** → 点右上角 **“从本地安装”**
+4. 选择刚才的 zip，等待安装完成 → 点 **“重启”**
+5. 重启后 hbbs 会自动启动，手机就变成 RustDesk ID 服务器了
+
+> **关于 key**：手动安装时**不会**自动生成随机 key，而是使用 zip 内置的**默认 key**
+> （见“默认 key 与修改 key”一节，当前默认 `W8n7Wz7XhPX8wEPUxpnop5T7HGyPGVSF`）。
+> 客户端连接时填这个 key 即可。若要改成自己的 key，见上一节的“方法 B”（root 后直接改
+> 手机里的 `config/env.sh`）。
+
+> **安装后自检**（确认是否跑起来了）：
+> 打开终端（或电脑 adb shell）执行 `ps -A | grep hbbs` 能看到进程；
+> 或在另一台设备用 RustDesk 客户端填**手机 IP + key** 连接测试。
+
 ---
 
 ## 客户端配置
@@ -111,7 +156,7 @@ chmod +x install.sh
 | 设置项 | 值 |
 |--------|-----|
 | ID/中继服务器 | 填手机 **IP 地址**（如 `192.168.1.100`） |
-| Key（公钥） | 安装时打印的随机 key（或 `--key` 指定的值） |
+| Key（公钥） | 一键安装时打印的随机 key；手动 Magisk 安装时用**默认 key** `W8n7Wz7XhPX8wEPUxpnop5T7HGyPGVSF`（或你自行修改的值） |
 
 > 公网访问需在路由器把端口转发到手机（见下节），ID 服务器地址填公网 IP 或域名。
 
